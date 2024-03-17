@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-
+from django.contrib.auth.models import User
 
 
 class Author(models.Model):
@@ -12,17 +12,22 @@ class Author(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 class Book(models.Model):
     book_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(
         "Book Name",
         max_length=50,
     )
-    author = models.ForeignKey(Author, on_delete = models.CASCADE, max_length=50)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, max_length=50)
     gener = models.CharField("Gener", max_length=50, null=True, blank=True)
     publication_year = models.DateField(null=True, blank=True, editable=True)
     book_img = models.ImageField(
-        "Book Image", null=True, blank=True, help_text="Provide a book image.",upload_to='media/images/'
+        "Book Image",
+        null=True,
+        blank=True,
+        help_text="Provide a book image.",
+        upload_to="media/images/",
     )
     description = models.CharField(
         "Description",
@@ -36,4 +41,12 @@ class Book(models.Model):
         return f"{self.title} by {self.author}"
 
 
+class Loan(models.Model):
+    loan_id = models.URLField(primary_key=True, default=uuid.uuid4, editable=False)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name = "Borrower")
+    loan_date = models.DateField(null = False, blank = False)
+    return_date = models.DateField(null = False, blank = False)
 
+    def __str__(self):
+        return f"Loan ID: {self.loan_id}, Book: {self.book}, User: {self.user}, Loan Date: {self.loan_date}, Return Date: {self.return_date}"

@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import Book,Author
+from .models import Book,Author,Loan
 
+
+class LoanAdmin(admin.ModelAdmin):
+    empty_value_display = "None"
+    list_display = [field.name for field in Loan._meta.fields if field.name != 'loan_id']
+    fields = [field.name for field in Loan._meta.fields if field.name != 'loan_id'] 
 
 class AuthorAdmin(admin.ModelAdmin):
     empty_value_display = "None"
@@ -14,4 +19,4 @@ class BookAdmin(admin.ModelAdmin):
 
 admin.site.register(Author,AuthorAdmin)
 admin.site.register(Book,BookAdmin)
-
+admin.site.register(Loan,LoanAdmin)

@@ -1,10 +1,10 @@
-from .models import Author
+from ..models import Author
 from rest_framework import exceptions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from rest_framework.views import APIView
-from .serializers import AuthonSerializer
+from ..serializers.serializers import AuthonSerializer
 import uuid
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -18,8 +18,8 @@ class AuthorViewSet(APIView):
                 serialized_data = AuthonSerializer(requested_author)
                 return Response(serialized_data.data, status=status.HTTP_200_OK)
 
-            all_author = Author.objects.all()
-            serialized_data = AuthonSerializer(all_author, many=True)
+            authors = Author.objects.all()
+            serialized_data = AuthonSerializer(authors, many=True)
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             raise exceptions.NotFound("Author not found")

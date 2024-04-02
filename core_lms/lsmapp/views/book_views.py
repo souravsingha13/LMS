@@ -51,9 +51,9 @@ class BookViewSet(ViewSet):
         responses=BookSerializer(),
         description="Retrieve a single book by its ID.",
     )
-    def retrive(self, request: Response, id: uuid.uuid4):
+    def retrive(self, request: Response, pk: uuid.uuid4):
         try:
-            book = Book.objects.get(book_id=id)
+            book = Book.objects.get(book_id=pk)
         except Book.DoesNotExist:
             raise exceptions.NotFound(
                 f"Book with id {id} not found.", status=status.HTTP_404_NOT_FOUND
@@ -87,11 +87,35 @@ class BookViewSet(ViewSet):
         parameters=[
             OpenApiParameter(
                 name="id", type=str, description="UUID of the book", location="path"
+            )
+        ],
+        request=BookSerializer,
+        responses=BookSerializer(),
+        description="Update a Book.",
+    )
+    def partial_update(self, request: Request, id: uuid.uuid4):
+        try:
+            book_instance = Book.objects.get(book_id=id)
+        except Book.DoesNotExist:
+            raise exceptions.NotFound(f"Book with id {id} not found.")
+        serialized_data = BookSerializer(
+            instance=book_instance, data=request.data, partial=True
+        )
+        if serialized_data.is_valid():
+            serialized_data.save()
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
+
+        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="id", type=str, description="UUID of the book", location="path"
             ),
         ],
         description="Delete a book by its ID.",
     )
-    def delete(self, request: Request, pk:uuid.uuid4):
+    def destroy(self, request: Request, pk: uuid.uuid4):
         try:
             book_instance = Book.objects.get(book_id=pk)
         except Book.DoesNotExist:

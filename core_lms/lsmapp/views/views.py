@@ -7,9 +7,15 @@ from rest_framework.views import APIView
 from ..serializers.serializers import AuthonSerializer
 import uuid
 from django.core.exceptions import ObjectDoesNotExist
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 
 class AuthorViewSet(APIView):
+    @extend_schema(
+        request=AuthonSerializer, 
+        responses=AuthonSerializer(),
+        description="Get all authors."
+    )
     def get(self, request: Request, id: uuid.uuid4 = None) -> Response:
         "Retrive all author object"
         try:
@@ -24,6 +30,11 @@ class AuthorViewSet(APIView):
         except ObjectDoesNotExist:
             raise exceptions.NotFound("Author not found")
 
+    @extend_schema(
+        request=AuthonSerializer,
+        responses=AuthonSerializer(),
+        description="Create a new Author.",
+    )
     def post(self, request: Request) -> Response:
         serialized_data = AuthonSerializer(data=request.data)
 
@@ -31,7 +42,16 @@ class AuthorViewSet(APIView):
             raise exceptions.ValidationError(serialized_data.errors)
         serialized_data.save()
         return Response(serialized_data.data)
-
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="id", type=str, description="UUID of the book", location="path"
+            )
+        ],
+        request=AuthonSerializer,
+        responses=AuthonSerializer(),
+        description="Create a new Author.",
+    )
     def put(self, request: Request, id: uuid.uuid4) -> Response:
         try:
             request_author = Author.objects.get(author_id=id)
@@ -50,7 +70,17 @@ class AuthorViewSet(APIView):
             serialized_data.errors, status=status.HTTP_400_BAD_REQUEST
         )
 
-    def delete(self, request, id):
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="id", type=str, description="UUID of the book", location="path"
+            ),
+        ],
+        request=AuthonSerializer,
+        responses=AuthonSerializer(),
+        description="Delete an Author.",
+    )
+    def delete(self, request, id:uuid.uuid4):
         try:
             book = Author.objects.get(author_id=id)
         except Author.DoesNotExist:

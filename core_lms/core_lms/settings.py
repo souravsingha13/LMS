@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     # My apps
     "lsmapp",
+    "authentication",
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "core_lms.urls"
+AUTH_USER_MODEL = "authentication.User"
+
 
 TEMPLATES = [
     {

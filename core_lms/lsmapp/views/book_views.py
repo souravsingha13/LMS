@@ -7,6 +7,8 @@ from rest_framework import exceptions, status
 from ..serializers.bookserializer import BookSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 import uuid
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 class BookViewSet(ViewSet):
@@ -19,6 +21,7 @@ class BookViewSet(ViewSet):
     @extend_schema(
         responses=BookSerializer(many=True), description="Retrieve all books."
     )
+    @method_decorator(cache_page(60*15))
     def list(self, request: Request):
         try:
             books = Book.objects.all()

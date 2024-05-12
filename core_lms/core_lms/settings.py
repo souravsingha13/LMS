@@ -26,8 +26,16 @@ SECRET_KEY = "django-insecure-sl@b&qo0g+tpzq0%86s$+**l)*ux+rm9b_dcqz!06i!of3o!7o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+   # ...
+   '127.0.0.1',
+   # ...
+]
 
 # Application definition
 
@@ -41,6 +49,7 @@ INSTALLED_APPS = [
     # 3rd party library
     "rest_framework",
     "drf_spectacular",
+    "debug_toolbar",
     # My apps
     "lsmapp",
     "authentication",
@@ -54,6 +63,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    #This below two middleware are for cache
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = "core_lms.urls"

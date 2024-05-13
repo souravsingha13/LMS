@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "debug_toolbar",
+    "django_celery_results",
     # My apps
     "lsmapp",
     "authentication",
@@ -211,3 +212,11 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "A Library Management System.",
     "VERSION": "1.0.0",
 }
+
+# Celery setting
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TIMEZONE = 'Asia/Dhaka'

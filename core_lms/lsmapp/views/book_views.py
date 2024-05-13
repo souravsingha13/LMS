@@ -9,7 +9,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 import uuid
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.core.cache import cache
+from django.core.cache import cache  # noqa: F401
+from ..task import my_task  # noqa: F401
 
 
 class BookViewSet(ViewSet):
@@ -24,17 +25,16 @@ class BookViewSet(ViewSet):
     )
     @method_decorator(cache_page(60*15))
     def list(self, request: Request):
-        if cache.get("book"):
-            print("From cache")
-        else:
-            try:
-                books = Book.objects.all()
-            except ObjectDoesNotExist:
-                raise exceptions.NotFound(
-                    "Author not found", status=status.HTTP_404_NOT_FOUND
-                )
-            serialized_books = BookSerializer(books, many=True)
-            return Response(serialized_books.data, status=status.HTTP_200_OK)
+        print("Hello .......................")
+        my_task.delay()
+        try:
+            books = Book.objects.all()
+        except ObjectDoesNotExist:
+            raise exceptions.NotFound(
+                "Author not found", status=status.HTTP_404_NOT_FOUND
+            )
+        serialized_books = BookSerializer(books, many=True)
+        return Response(serialized_books.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         request=BookSerializer,
